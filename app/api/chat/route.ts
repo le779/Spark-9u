@@ -19,7 +19,6 @@ export async function POST(req: Request) {
     const { messages } = await req.json()
 
     const result = await streamText({
-      // Using a free, high-quality model from OpenRouter
       model: openrouter("meta-llama/llama-3.1-8b-instruct:free"),
       messages,
       system: `You are Spark, a helpful and friendly AI assistant. You're knowledgeable, creative, and always eager to help users with their questions and tasks. Keep your responses engaging and conversational while being informative and accurate.`,
@@ -28,7 +27,6 @@ export async function POST(req: Request) {
     return result.toDataStreamResponse()
   } catch (error) {
     console.error("Chat API error:", error)
-    // Ensure a proper error response is sent
     if (error instanceof Error) {
       return new Response(JSON.stringify({ error: error.message }), {
         status: 500,
