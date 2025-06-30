@@ -17,7 +17,7 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'o4 Mini High',
+        model: 'gpt-4o', // ✅ GPT-4o model
         messages: body.messages,
       }),
     });
