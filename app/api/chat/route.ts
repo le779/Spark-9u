@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       'Content-Type': 'application/json'
     },
     body: JSON.stringify({
-      model: 'gpt-3.5-turbo',
+      model: 'OpenAI: o4 Mini High',
       messages: body.messages
     })
   });
