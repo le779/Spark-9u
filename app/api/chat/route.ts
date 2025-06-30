@@ -1,40 +1,22 @@
-import { streamText } from "ai"
-import { createOpenAI } from "@ai-sdk/openai"
-
-// Allow streaming responses up to 30 seconds
-export const maxDuration = 30
-
-// Create a custom AI provider instance for OpenRouter
-const openrouter = createOpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY,
-  baseURL: "https://openrouter.ai/api/v1",
-  headers: {
-    "HTTP-Referer": process.env.VERCEL_URL || "http://localhost:3000",
-    "X-Title": "Spark AI Chat",
-  },
-})
+import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
-  try {
-    const { messages } = await req.json()
+  const body = await req.json();
 
-    const result = await streamText({
-      // Using a free, high-quality model from OpenRouter
-      model: openrouter("meta-llama/llama-3.1-8b-instruct:free"),
-      messages,
-      system: `You are Spark, a helpful and friendly AI assistant. You're knowledgeable, creative, and always eager to help users with their questions and tasks. Keep your responses engaging and conversational while being informative and accurate.`,
-    })
+  const apiKey = process.env.OPENAI_API_KEY;
 
-    return result.toDataStreamResponse()
-  } catch (error) {
-    console.error("Chat API error:", error)
-    // Ensure a proper error response is sent
-    if (error instanceof Error) {
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      })
-    }
-    return new Response("Internal Server Error", { status: 500 })
+  if (!apiKey) {
+    return NextResponse.json({ error: 'Missing API Key' }, { status: 500 });
   }
-}
+
+  const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      messages: body.messages
+    })
+  });
