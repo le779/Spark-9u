@@ -9,14 +9,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing API Key' }, { status: 500 });
   }
 
-  const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${apiKey}`,
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      model: 'OpenAI: o4 Mini High',
-      messages: body.messages
-    })
-  });
+  try {
+    const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'o4 Mini High',
+        messages: body.messages,
+      }),
+    });
+
+    const data = await openaiRes.json();
+    return NextResponse.json(data);
+  } catch (err) {
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+  }
+}
